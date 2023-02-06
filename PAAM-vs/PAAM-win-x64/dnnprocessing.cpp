@@ -73,6 +73,9 @@ void PersonPoseModel::loadNeuralNetwork(dnn::Net net) {
 	poseNet = net;
 }
 
+/* Pass the currently loaded Mat/frame in the object through the loaded
+   estimation network. Store keypoints in private buffer.
+*/
 void PersonPoseModel::forwardNet() {
 	Mat inputBlob = dnn::blobFromImage(poseFrame, 1.0 / 255, Size(INPUTWIDTH, INPUTHEIGHT),
 		Scalar(0, 0, 0), false, false);
@@ -112,12 +115,13 @@ void PersonPoseModel::forwardNet(Mat outputFrame) {
 
 }
 
+// Render a single line using two indices (0-14) of keypoints.
 void PersonPoseModel::renderBodyLine(unsigned int pbIndex1, unsigned int pbIndex2) {
 	if ((keypointBuffer[pbIndex1].x < 10 && keypointBuffer[pbIndex1].y < 10) ||
 		(keypointBuffer[pbIndex2].x < 10 && keypointBuffer[pbIndex2].y < 10)) {
 		return;
 	}
-	line(poseFrame, keypointBuffer[pbIndex1], keypointBuffer[pbIndex2], Scalar(255, 0, 0), 2, LINE_AA);
+	line(poseFrame, keypointBuffer[pbIndex1], keypointBuffer[pbIndex2], Scalar(255, 0, 0), 1, LINE_AA);
 }
 
 void PersonPoseModel::renderPoseLines() {
@@ -139,6 +143,9 @@ void PersonPoseModel::renderPoseLines() {
 	renderBodyLine(1, 11);
 }
 
+/* Render all points and lines of the person's body after passing
+*  frame through the network.
+*/
 void PersonPoseModel::renderPose() {
 	int bIndex = 0;
 
@@ -146,7 +153,7 @@ void PersonPoseModel::renderPose() {
 	for (bIndex = 0; bIndex < TRACKINGPOINTS; bIndex++) {
 		cv::Point bodyPoint = keypointBuffer[bIndex];
 		// Draw circle around body part
-		circle(poseFrame, Point((int)bodyPoint.x, (int)bodyPoint.y), 5, Scalar(255, 255, 0), -1);
+		circle(poseFrame, Point((int)bodyPoint.x, (int)bodyPoint.y), 3, Scalar(255, 255, 0), -1);
 
 		// Put text of the body part
 		//putText(poseFrame, format("%d", bIndex),

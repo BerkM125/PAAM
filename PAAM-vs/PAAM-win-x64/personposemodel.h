@@ -20,6 +20,8 @@ using namespace std;
 const string protoFile = "../../../estimation/openpose/models/pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
 const string weightsFile = "../../../estimation/openpose/models/pose/mpi/pose_iter_160000.caffemodel";
 
+typedef void(*preprocess)(Mat &frame);
+typedef void(*preprocessOut)(Mat frame, Mat &output);
 
 class PersonPoseModel {
 public:
@@ -40,7 +42,13 @@ public:
 
 	void renderPose(void);
 	void renderPose(cv::String WINDOWNAME);
-
+	
+	void preprocessFrame(preprocess p) {
+		p(poseFrame);
+	}
+	void preprocessFrame(preprocessOut p, Mat &output) {
+		p(poseFrame, output);
+	}
 	Mat getFrame(void);
 	~PersonPoseModel();
 private:

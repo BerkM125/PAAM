@@ -24,12 +24,18 @@
     <ClCompile Include="videocap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="preprocessing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="personposemodel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="preprocesslib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,6 +14,7 @@
 
 #include "constants.h"
 #include "personposemodel.h"
+#include "preprocesslib.h"
 
 using namespace cv;
 
@@ -31,8 +32,8 @@ void processVideo(cv::String filename) {
 	//int frame_height = static_cast<int>(video.get(4)/2);
 
 
-	int frame_width = static_cast<int>( (int)(video.get(3)*0.85*1.5) - (int)(video.get(3) * 0.15*1.5));
-	int frame_height = static_cast<int>((int)(video.get(4)*0.85*1.5) - (int)(video.get(4) * 0.15*1.5));
+	int frame_width = static_cast<int>(video.get(3));
+	int frame_height = static_cast<int>(video.get(4));
 	Size frame_size(frame_width, frame_height);
 	int fps = 30;
 	//Initialize video writer object
@@ -44,10 +45,9 @@ void processVideo(cv::String filename) {
 		frameSuccess = video.read(rawFrame);
 		if (!frameSuccess) break;
 
-		resize(rawFrame, rawFrame, cv::Size(), 1.5, 1.5);
-		mainPerson.poseFrame = rawFrame(Range((int)(rawFrame.rows * 0.15), (int)(rawFrame.rows * 0.85)),
-			Range((int)(rawFrame.cols * 0.15), (int)(rawFrame.cols * 0.85)));
-		
+		//resize(rawFrame, rawFrame, cv::Size(), 1.0, 1.0);
+		mainPerson.poseFrame = rawFrame;
+		mainPerson.preprocessFrame(custom);
 
 		//mainPerson.poseFrame = rawFrame(Range(rawFrame.rows/2, rawFrame.rows), 
 			//							Range(rawFrame.cols*0.24, rawFrame.cols*0.66));
