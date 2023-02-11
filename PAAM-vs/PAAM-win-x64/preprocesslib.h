@@ -17,5 +17,8 @@
 using namespace cv;
 using namespace std;
 extern void custom(Mat& frame);
-extern void contourify(Mat& input, unsigned int lowerBound, unsigned int upperBound);
-extern void contourify(Mat input, Mat& output, unsigned int lowerBound, unsigned int upperBound);
+extern Rect contourify(Mat& input, unsigned int lowerBound, unsigned int upperBound);
+extern Rect contourify(Mat input, Mat& output, unsigned int lowerBound, unsigned int upperBound);
+extern void cropContourBounds(Mat input, Mat& output, unsigned int lowerBound, unsigned int upperBound);
+
+extern vector<Rect> globalRegionBuffer;

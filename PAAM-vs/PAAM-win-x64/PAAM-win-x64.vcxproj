@@ -160,6 +160,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="personposemodel.h" />
     <ClInclude Include="preprocesslib.h" />
+    <ClInclude Include="vectorlib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

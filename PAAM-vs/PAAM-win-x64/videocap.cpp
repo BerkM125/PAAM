@@ -43,16 +43,20 @@ void processVideo(cv::String filename) {
 	while (frameSuccess) {
 		Mat rawFrame;
 		frameSuccess = video.read(rawFrame);
-		if (!frameSuccess) break;
+		if (!frameSuccess) {
+			break;
+		}
 
-		//resize(rawFrame, rawFrame, cv::Size(), 1.0, 1.0);
 		mainPerson.poseFrame = rawFrame;
 		mainPerson.preprocessFrame(custom);
 
-		//mainPerson.poseFrame = rawFrame(Range(rawFrame.rows/2, rawFrame.rows), 
-			//							Range(rawFrame.cols*0.24, rawFrame.cols*0.66));
-		
+		mainPerson.loadROI(globalRegionBuffer[0]);
+		mainPerson.loadOrigDimensions(Rect(0, 0, rawFrame.cols, rawFrame.rows));
+		mainPerson.enableROIMode();
+
 		mainPerson.forwardNet();
+		mainPerson.poseFrame = rawFrame;
+		
 		mainPerson.renderPose();
 
 		output.write(mainPerson.poseFrame);

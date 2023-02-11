@@ -36,9 +36,13 @@ public:
 	void loadPoseFrame(Mat frame);
 	void loadNeuralNetwork(cv::String protoFile, cv::String weightsFile);
 	void loadNeuralNetwork(dnn::Net net);
+	void loadROI(Rect region);
+	void loadOrigDimensions(Rect bounds);
+
+	void enableROIMode(void);
+	void disableROIMode(void);
 
 	void forwardNet(void);
-	void forwardNet(Mat outputFrame);
 
 	void renderPose(void);
 	void renderPose(cv::String WINDOWNAME);
@@ -54,6 +58,9 @@ public:
 private:
 	
 	dnn::Net poseNet;
+	bool regionalScalingMode = false;
+	Rect estimationRegionInterest;
+	Rect originalRegion;
 	vector<Point> keypointBuffer;
 
 	void renderBodyLine(unsigned int pbIndex1, unsigned int pbIndex2);
