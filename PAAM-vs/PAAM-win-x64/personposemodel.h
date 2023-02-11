@@ -36,11 +36,11 @@ public:
 	void loadPoseFrame(Mat frame);
 	void loadNeuralNetwork(cv::String protoFile, cv::String weightsFile);
 	void loadNeuralNetwork(dnn::Net net);
-	inline void loadROI(Rect region);
-	inline void loadOrigDimensions(Rect bounds);
+	void loadROI(Rect region);
+	void loadOrigDimensions(Rect bounds);
 
-	inline void enableROIMode(void);
-	inline void disableROIMode(void);
+	void enableROIMode(void);
+	void disableROIMode(void);
 
 	void forwardNet(void);
 
