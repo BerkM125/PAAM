@@ -26,35 +26,29 @@ void loopProcessing(PersonPoseModel &person) {
 	}
 }
 
-PersonPoseModel::PersonPoseModel() {
-	keypointBuffer.resize(TRACKINGPOINTS);
-	poseNet = dnn::readNetFromCaffe(protoFile, weightsFile);
+PersonPoseModel::PersonPoseModel()
+	: poseNet{ dnn::readNetFromCaffe(protoFile, weightsFile) } {
+	keypointBuffer.reserve(TRACKINGPOINTS);
 }
 
-PersonPoseModel::PersonPoseModel(Mat poseFrame) {
-	keypointBuffer.resize(TRACKINGPOINTS);
-	this->poseFrame = poseFrame.clone();
-	poseNet = dnn::readNetFromCaffe(protoFile, weightsFile);
+PersonPoseModel::PersonPoseModel(Mat poseFrame) 
+	: poseFrame{ poseFrame.clone() }, poseNet{ dnn::readNetFromCaffe(protoFile, weightsFile) } {
+	keypointBuffer.reserve(TRACKINGPOINTS);
 }
 
-PersonPoseModel::PersonPoseModel(Mat poseFrame, dnn::Net poseNet) {
-	keypointBuffer.resize(TRACKINGPOINTS);
-	this->poseFrame = poseFrame.clone();
-	this->poseNet = poseNet;
+PersonPoseModel::PersonPoseModel(Mat poseFrame, dnn::Net poseNet)
+	: poseFrame{ poseFrame.clone() }, poseNet{ poseNet } {
+	keypointBuffer.reserve(TRACKINGPOINTS);
 }
 
-PersonPoseModel::PersonPoseModel(Mat poseFrame, dnn::Net poseNet, vector<Point> loadingBuffer) {
-	keypointBuffer.resize(TRACKINGPOINTS);
-	this->poseFrame = poseFrame.clone();
-	this->poseNet = poseNet;
-	this->keypointBuffer = loadingBuffer;
+PersonPoseModel::PersonPoseModel(Mat poseFrame, dnn::Net poseNet, vector<Point> loadingBuffer) 
+	: poseFrame{ poseFrame.clone() }, poseNet{ poseNet }, keypointBuffer{ loadingBuffer } {
+	keypointBuffer.reserve(TRACKINGPOINTS);
 }
 
-PersonPoseModel::PersonPoseModel(const PersonPoseModel& ppm) {
-	keypointBuffer.resize(TRACKINGPOINTS);
-	this->poseFrame = ppm.poseFrame.clone();
-	this->poseNet = ppm.poseNet;
-	this->keypointBuffer = ppm.keypointBuffer;
+PersonPoseModel::PersonPoseModel(const PersonPoseModel& ppm) 
+	: poseFrame{ ppm.poseFrame.clone() }, poseNet{ ppm.poseNet }, keypointBuffer{ ppm.keypointBuffer } {
+	keypointBuffer.reserve(TRACKINGPOINTS);
 }
 
 void PersonPoseModel::loadPointBuffer(vector<Point> buffer) {
@@ -73,18 +67,22 @@ void PersonPoseModel::loadNeuralNetwork(dnn::Net net) {
 	poseNet = net;
 }
 
+// Load a Rect object with the ROI's dimensions
 void PersonPoseModel::loadROI(Rect region) {
 	estimationRegionInterest = region;
 }
 
+// Load a Rect object with the original or unprocessed frame's dimensions
 void PersonPoseModel::loadOrigDimensions(Rect bounds) {
 	originalRegion = bounds;
 }
 
+// Enable ROI shifting mode
 void PersonPoseModel::enableROIMode() {
 	regionalScalingMode = true;
 }
 
+// Disable ROI shifting mode
 void PersonPoseModel::disableROIMode() {
 	regionalScalingMode = false;
 }

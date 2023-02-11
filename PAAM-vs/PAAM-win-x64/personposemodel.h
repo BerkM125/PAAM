@@ -27,20 +27,20 @@ class PersonPoseModel {
 public:
 	Mat poseFrame;
 	PersonPoseModel();
-	PersonPoseModel(Mat poseFrame);
-	PersonPoseModel(Mat poseFrame, dnn::Net poseNet);
-	PersonPoseModel(Mat poseFrame, dnn::Net poseNet, vector<Point> loadingBuffer);
+	explicit PersonPoseModel(Mat poseFrame);
+	explicit PersonPoseModel(Mat poseFrame, dnn::Net poseNet);
+	explicit PersonPoseModel(Mat poseFrame, dnn::Net poseNet, vector<Point> loadingBuffer);
 	PersonPoseModel(const PersonPoseModel& ppm);
 
 	void loadPointBuffer(vector<Point> buffer);
 	void loadPoseFrame(Mat frame);
 	void loadNeuralNetwork(cv::String protoFile, cv::String weightsFile);
 	void loadNeuralNetwork(dnn::Net net);
-	void loadROI(Rect region);
-	void loadOrigDimensions(Rect bounds);
+	inline void loadROI(Rect region);
+	inline void loadOrigDimensions(Rect bounds);
 
-	void enableROIMode(void);
-	void disableROIMode(void);
+	inline void enableROIMode(void);
+	inline void disableROIMode(void);
 
 	void forwardNet(void);
 
@@ -55,12 +55,12 @@ public:
 	}
 	Mat getFrame(void);
 	~PersonPoseModel();
+
 private:
-	
 	dnn::Net poseNet;
 	bool regionalScalingMode = false;
-	Rect estimationRegionInterest;
-	Rect originalRegion;
+	Rect estimationRegionInterest = Rect(0, 0, 0, 0);
+	Rect originalRegion = Rect(0, 0, 0, 0);
 	vector<Point> keypointBuffer;
 
 	void renderBodyLine(unsigned int pbIndex1, unsigned int pbIndex2);
