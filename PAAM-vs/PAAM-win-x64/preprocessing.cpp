@@ -23,7 +23,7 @@ using namespace std;
 vector<Rect> globalRegionBuffer(1);
 
 void custom(Mat& frame) {
-	cropContourBounds(frame, frame, 100, 179);
+	cropContourBounds(frame, frame, 170, 179);
 }
 
 // Assert rectangle coordinates, make sure nothing exceeds window bounds
@@ -58,14 +58,14 @@ Rect contourify(Mat input, Mat& output, unsigned int lowerBound, unsigned int up
 	cvtColor(input, modifierMat, COLOR_BGR2HSV);
 
 	// Mask
-	inRange(modifierMat, Scalar(lowerBound, 0, 0), Scalar(upperBound, 255, 255), masking);
+	inRange(modifierMat, Scalar(lowerBound, 120, 120), Scalar(upperBound, 255, 255), masking);
 	
 	// Morphological opening and closing
-	/*erode(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+	erode(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
 	dilate(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
 
 	dilate(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
-	erode(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));*/
+	erode(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
 
 	// Find contours and store in the contour buffer
 	findContours(masking, contourBuffer, RETR_TREE, CHAIN_APPROX_SIMPLE);
@@ -91,6 +91,10 @@ Rect contourify(Mat input, Mat& output, unsigned int lowerBound, unsigned int up
 		}
 	}
 
+	/*if (upperLeft.x != INT_MAX && upperLeft.y != INT_MAX &&
+		lowerRight.x != -1 && lowerRight.y != -1) {
+		rectangle(output, contourOutline, Scalar(255, 255, 255), 2);
+	}*/
 	return contourOutline;
 
 }
@@ -103,17 +107,18 @@ void cropContourBounds(Mat input, Mat &output, unsigned int lowerBound, unsigned
 	Rect copyBox = boundingBox;
 
 	// Enlarge the box a bit to encompass more than just the subject
-	boundingBox.width *= 4;
-	boundingBox.height *= 4;
+	boundingBox.width *= 5;
+	boundingBox.height *= 5;
 
 	dWidth = boundingBox.width - copyBox.width;
 	dHeight = boundingBox.height - copyBox.height;
 
 	boundingBox.x -= dWidth;
 	boundingBox.y -= dHeight;
+
 	boundingBox.width += dWidth;
 	boundingBox.height += dHeight;
-
+	rectangle(output, boundingBox, Scalar(255, 255, 255), 2);
 	// Justify bounding box within the frame, make sure it does not exceed window bounds
 	assertBox(boundingBox, input);
 

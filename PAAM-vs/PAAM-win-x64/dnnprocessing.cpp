@@ -91,11 +91,22 @@ void PersonPoseModel::disableROIMode() {
    estimation network. Store keypoints in private buffer.
 */
 void PersonPoseModel::forwardNet() {
+	Mat inputBlob;
+	try {
+		if (poseFrame.cols > 0 && poseFrame.rows > 0) {
+			// Generate blob from poseFrame, pass into the network...
+			inputBlob = dnn::blobFromImage(poseFrame, 1.0 / 255, Size(INPUTWIDTH, INPUTHEIGHT),
+				Scalar(0, 0, 0), false, false);
+		}
+		else {
+			throw poseFrame;
+		}
+	}
+	catch (Mat m) {
+		cout << "Input poseFrame empty, dimensions are: " << m.cols << "x" << m.rows << ", returning..." << endl;
+		return;
+	}
 
-	// Generate blob from poseFrame, pass into the network...
-	Mat inputBlob = dnn::blobFromImage(poseFrame, 1.0 / 255, Size(INPUTWIDTH, INPUTHEIGHT),
-		Scalar(0, 0, 0), false, false);
-	
 	poseNet.setInput(inputBlob);
 	Mat netOut = poseNet.forward();
 
@@ -135,9 +146,6 @@ void PersonPoseModel::forwardNet() {
 					// Calculate the shifts from original frame to bounding box
 					double wFactor = estimationRegionInterest.x - originalRegion.x;
 					double hFactor = estimationRegionInterest.y - originalRegion.y;
-					
-
-					//cout << "WFACTOR: " << wFactor << " " << "HFACTOR: " << hFactor << endl;
 					
 					// Fix the keypoints accordingly
 					bodyPoint.x += wFactor;

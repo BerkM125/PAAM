@@ -59,8 +59,18 @@ void processVideo(cv::String filename) {
 		
 		mainPerson.renderPose();
 
-		output.write(mainPerson.poseFrame);
-		//imshow(PRIMARYWINDOW, mainPerson.poseFrame);
+		try {
+			if (mainPerson.poseFrame.cols > 0 && mainPerson.poseFrame.rows > 0) {
+				output.write(mainPerson.poseFrame);
+			}
+			else {
+				throw mainPerson.poseFrame;
+			}
+		}
+		catch (Mat m) {
+			cout << "ERROR: poseFrame empty, dimensions are: " << m.cols << "x" << m.rows << ", continuing..." << endl;
+		}
+
 
 		if (waitKey(30) == 27) break;
 	}
