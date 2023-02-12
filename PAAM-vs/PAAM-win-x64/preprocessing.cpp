@@ -22,8 +22,9 @@ using namespace std;
 
 vector<Rect> globalRegionBuffer(1);
 
+// This is just my custom preprocessing function; change it to whatever you need.
 void custom(Mat& frame) {
-	cropContourBounds(frame, frame, 170, 179);
+	cropContourBounds(frame, frame, 0, 20);
 }
 
 // Assert rectangle coordinates, make sure nothing exceeds window bounds
@@ -34,6 +35,7 @@ void assertBox(Rect &r, Mat parentFrame) {
 				? parentFrame.cols - (r.x + BOXASSERTION_THRESHOLD) : r.width;
 	r.height = (r.height + r.y > parentFrame.rows) 
 				? parentFrame.rows - (r.y + BOXASSERTION_THRESHOLD) : r.height;
+
 }
 
 /* Simplified contour detection, creates and uses a mask of colors
@@ -58,7 +60,7 @@ Rect contourify(Mat input, Mat& output, unsigned int lowerBound, unsigned int up
 	cvtColor(input, modifierMat, COLOR_BGR2HSV);
 
 	// Mask
-	inRange(modifierMat, Scalar(lowerBound, 120, 120), Scalar(upperBound, 255, 255), masking);
+	inRange(modifierMat, Scalar(lowerBound, 190, 190), Scalar(upperBound, 255, 255), masking);
 	
 	// Morphological opening and closing
 	erode(masking, masking, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
@@ -107,8 +109,8 @@ void cropContourBounds(Mat input, Mat &output, unsigned int lowerBound, unsigned
 	Rect copyBox = boundingBox;
 
 	// Enlarge the box a bit to encompass more than just the subject
-	boundingBox.width *= 5;
-	boundingBox.height *= 5;
+	boundingBox.width *= 2;
+	boundingBox.height *= 2;
 
 	dWidth = boundingBox.width - copyBox.width;
 	dHeight = boundingBox.height - copyBox.height;
@@ -118,11 +120,11 @@ void cropContourBounds(Mat input, Mat &output, unsigned int lowerBound, unsigned
 
 	boundingBox.width += dWidth;
 	boundingBox.height += dHeight;
-	rectangle(output, boundingBox, Scalar(255, 255, 255), 2);
+	
 	// Justify bounding box within the frame, make sure it does not exceed window bounds
 	assertBox(boundingBox, input);
 
-
+	rectangle(output, boundingBox, Scalar(255, 255, 255), 2);
 	output = input(boundingBox);
 
 	globalRegionBuffer[0] = boundingBox;

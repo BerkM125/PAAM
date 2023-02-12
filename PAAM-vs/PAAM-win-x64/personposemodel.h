@@ -17,6 +17,7 @@
 using namespace cv;
 using namespace std;
 
+// Change paths according to pose estimation model file destinations on your machine
 const string protoFile = "../../../estimation/openpose/models/pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
 const string weightsFile = "../../../estimation/openpose/models/pose/mpi/pose_iter_160000.caffemodel";
 

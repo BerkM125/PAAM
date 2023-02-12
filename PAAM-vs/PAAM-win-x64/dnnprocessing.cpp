@@ -120,14 +120,12 @@ void PersonPoseModel::forwardNet() {
 	for (int bIndex = 0; bIndex < TRACKINGPOINTS; bIndex++) {
 		Mat confidence(netH, netW, CV_32F, netOut.ptr(0, bIndex));
 
+		// Point for the actual keypoint, point for the confidence map keypoints
 		Point2f bodyPoint(-1, -1);
 		Point mapPoint;
-
 		double prob;
 
 		minMaxLoc(confidence, 0, &prob, 0, &mapPoint);
-
-
 		if (prob > CONFIDENCETHRESHOLD) {
 			bodyPoint = mapPoint;
 
@@ -137,16 +135,12 @@ void PersonPoseModel::forwardNet() {
 		}
 
 		if (regionalScalingMode) {
-			
 			// Surround scaling functionality with try...catch to check for invalid bounds exception
 			try {
-
 				if (estimationRegionInterest.width > 0 && estimationRegionInterest.height > 0) {
-
 					// Calculate the shifts from original frame to bounding box
 					double wFactor = estimationRegionInterest.x - originalRegion.x;
 					double hFactor = estimationRegionInterest.y - originalRegion.y;
-					
 					// Fix the keypoints accordingly
 					bodyPoint.x += wFactor;
 					bodyPoint.y += hFactor;
@@ -155,7 +149,6 @@ void PersonPoseModel::forwardNet() {
 					throw(estimationRegionInterest);
 				}
 			}
-
 			// Catch Rect exception and print dimensions
 			catch (Rect region) {
 				cout << "ROI error: Width and height set to zero";
@@ -163,7 +156,6 @@ void PersonPoseModel::forwardNet() {
 					<< ", W: " << region.width << ", H: " << region.height << endl;
 			}
 		}
-
 		// Store keypoint into buffer
 		keypointBuffer[bIndex] = bodyPoint;
 	}

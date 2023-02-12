@@ -16,6 +16,10 @@
 #include "personposemodel.h"
 #include "preprocesslib.h"
 
+// Before ANY preprocessing, useful to crop out extreme noise that's hard to filter through
+#define RAWWIDTH_SCALE 0.8
+#define RAWHEIGHT_SCALE 1.0
+
 using namespace cv;
 
 extern cv::String PRIMARYWINDOW;
@@ -23,17 +27,14 @@ extern void loopProcessing(PersonPoseModel &person);
 
 void processVideo(cv::String filename) {
 	VideoCapture video(filename);
-
 	PersonPoseModel mainPerson;
 
 	bool frameSuccess = true;
 
-	//int frame_width = static_cast<int>(video.get(3)*0.66 - video.get(3)*0.24);
-	//int frame_height = static_cast<int>(video.get(4)/2);
+	// Establish video frame dimensions
+	int frame_width = static_cast<int>(video.get(3) * RAWWIDTH_SCALE);
+	int frame_height = static_cast<int>(video.get(4) * RAWHEIGHT_SCALE);
 
-
-	int frame_width = static_cast<int>(video.get(3));
-	int frame_height = static_cast<int>(video.get(4));
 	Size frame_size(frame_width, frame_height);
 	int fps = 30;
 	//Initialize video writer object
@@ -46,10 +47,15 @@ void processVideo(cv::String filename) {
 		if (!frameSuccess) {
 			break;
 		}
-
+		// Before preprocessing
+		rawFrame = rawFrame(Rect(0, 0, rawFrame.cols * RAWWIDTH_SCALE, rawFrame.rows * RAWHEIGHT_SCALE));
+		// Load raw frame into the pose estimator
 		mainPerson.poseFrame = rawFrame;
+
+		// Pass custom preprocessor
 		mainPerson.preprocessFrame(custom);
 
+		// Load the ROI, original image dimensions for shifting, and pass image to the neural network.
 		mainPerson.loadROI(globalRegionBuffer[0]);
 		mainPerson.loadOrigDimensions(Rect(0, 0, rawFrame.cols, rawFrame.rows));
 		mainPerson.enableROIMode();
@@ -59,6 +65,7 @@ void processVideo(cv::String filename) {
 		
 		mainPerson.renderPose();
 
+		// Write to video if possible; check for bad frames, because they will corrupt footage.
 		try {
 			if (mainPerson.poseFrame.cols > 0 && mainPerson.poseFrame.rows > 0) {
 				output.write(mainPerson.poseFrame);
