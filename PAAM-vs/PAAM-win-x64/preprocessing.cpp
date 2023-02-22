@@ -27,6 +27,10 @@ void custom(Mat& frame) {
 	cropContourBounds(frame, frame, 0, 20);
 }
 
+void defaultPreprocess(Mat& frame) {
+	return;
+}
+
 // Assert rectangle coordinates, make sure nothing exceeds window bounds
 void assertBox(Rect &r, Mat parentFrame) {
 	r.x = (r.x < BOXASSERTION_THRESHOLD) ? BOXASSERTION_THRESHOLD : r.x;

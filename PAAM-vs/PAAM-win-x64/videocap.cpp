@@ -23,7 +23,58 @@
 using namespace cv;
 
 extern cv::String PRIMARYWINDOW;
+cv::String ALTERNATEWINDOW;
 extern void loopProcessing(PersonPoseModel &person);
+
+// DEMONSTRATIONAL MULTI-PERSON TRACKING DEMO. MADE TO TRACK TWO PLAYERS IN A SET VIDEO. JUST AN EXAMPLE
+void trackOneOnOne(cv::String filename) {
+	VideoCapture video(filename);
+	PersonPoseModel person1;
+	PersonPoseModel person2;
+
+	Mat upperFrame;
+	Mat lowerFrame;
+
+	bool frameSuccess = true;
+
+	while (frameSuccess) {
+		Mat currFrame;
+		frameSuccess = video.read(currFrame);
+
+		if (!frameSuccess) {
+			break;
+		}
+
+		currFrame = currFrame(Rect(0, 0, currFrame.cols * RAWWIDTH_SCALE, currFrame.rows * RAWHEIGHT_SCALE));
+		
+		// Establish regions of interest for the upper court and lwoer court, obviously scaling is different due to camera angles
+		Rect upperFrameROI(115, currFrame.rows*0.2, currFrame.cols-115, currFrame.rows * 0.45 - currFrame.rows * 0.2);
+		Rect lowerFrameROI(0, currFrame.rows * 0.45, currFrame.cols, currFrame.rows - currFrame.rows*0.45);
+
+		upperFrame = currFrame(upperFrameROI);
+		lowerFrame = currFrame(lowerFrameROI);
+
+		// Render ROIs
+		rectangle(currFrame, upperFrameROI, Scalar(255, 255, 255), 2);
+		rectangle(currFrame, lowerFrameROI, Scalar(255, 255, 255), 2);
+
+		// Load raw frame into the pose estimator
+		person1.poseFrame = lowerFrame;
+		person1.preprocessFrame(defaultPreprocess);
+		person1.forwardNet();
+
+		person2.poseFrame = upperFrame;
+		person2.preprocessFrame(defaultPreprocess);
+		person2.forwardNet();
+
+		// Render both model poses
+		person1.renderPose();
+		person2.renderPose();
+		imshow(ALTERNATEWINDOW, currFrame);
+		if (waitKey(30) == 27) break;
+	}
+	video.release();
+}
 
 void processVideo(cv::String filename) {
 	VideoCapture video(filename);

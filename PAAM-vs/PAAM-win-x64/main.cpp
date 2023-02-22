@@ -17,12 +17,14 @@ using namespace std;
 
 extern void videoLoop(void);
 extern void processVideo(cv::String filename);
+extern void trackOneOnOne(cv::String filename);
 
 cv::String PRIMARYWINDOW = "PAAM-x64";
 
 // Just my personal file path, customize however you'd like
 int main(void) {
-	processVideo("C:/Berkan/misc/tennisplay.mp4");
+	//processVideo("C:/Berkan/misc/tennisplay.mp4");
+	trackOneOnOne("C:/Berkan/misc/tennisplay.mp4");
 	destroyAllWindows();
 	return (0);
 }
